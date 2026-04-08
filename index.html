@@ -1,444 +1,501 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>알뜰폰 AI 상담원</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>알뜰폰 AI 상담원</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --primary: #4F8EF7;
-      --primary-dark: #3a75d9;
-      --bg: #F4F6FB;
-      --surface: #FFFFFF;
-      --text: #1a1a2e;
-      --muted: #8A8FA8;
-      --user-bubble: #4F8EF7;
-      --ai-bubble: #FFFFFF;
-      --border: #E4E8F4;
-      --shadow: 0 4px 24px rgba(79,142,247,0.10);
-    }
+        :root {
+            --primary: #4F8EF7;
+            --primary-dark: #3a75d9;
+            --bg: #F4F6FB;
+            --surface: #FFFFFF;
+            --text: #1a1a2e;
+            --muted: #8A8FA8;
+            --user-bubble: #4F8EF7;
+            --ai-bubble: #FFFFFF;
+            --border: #E4E8F4;
+            --shadow: 0 4px 24px rgba(79, 142, 247, 0.10);
+        }
 
-    body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
 
-    .chat-container {
-      width: 100%;
-      max-width: 480px;
-      height: 90vh;
-      max-height: 800px;
-      background: var(--surface);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
+        .chat-container {
+            width: 100%;
+            max-width: 480px;
+            height: 90vh;
+            max-height: 800px;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
 
-    /* Header */
-    .chat-header {
-      padding: 20px 24px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+        /* Header */
+        .chat-header {
+            padding: 20px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-    .avatar {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #4F8EF7, #7B5EFB);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #4F8EF7, #7B5EFB);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
 
-    .header-info h1 {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.3px;
-    }
+        .header-info h1 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
 
-    .header-info p {
-      font-size: 12px;
-      color: #22c55e;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 2px;
-    }
+        .header-info p {
+            font-size: 12px;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 2px;
+        }
 
-    .online-dot {
-      width: 7px;
-      height: 7px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
+        .online-dot {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+        @keyframes pulse {
 
-    /* Messages */
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      scroll-behavior: smooth;
-    }
+            0%,
+            100% {
+                opacity: 1;
+            }
 
-    .messages::-webkit-scrollbar { width: 4px; }
-    .messages::-webkit-scrollbar-track { background: transparent; }
-    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+            50% {
+                opacity: 0.4;
+            }
+        }
 
-    /* Message rows */
-    .message-row {
-      display: flex;
-      gap: 10px;
-      animation: fadeUp 0.25s ease both;
-    }
+        /* Messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+        .messages::-webkit-scrollbar {
+            width: 4px;
+        }
 
-    .message-row.user {
-      flex-direction: row-reverse;
-    }
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-    .msg-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #4F8EF7, #7B5EFB);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
-      align-self: flex-end;
-    }
+        .messages::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
 
-    .bubble-wrap {
-      display: flex;
-      flex-direction: column;
-      max-width: 75%;
-      gap: 4px;
-    }
+        /* Message rows */
+        .message-row {
+            display: flex;
+            gap: 10px;
+            animation: fadeUp 0.25s ease both;
+        }
 
-    .message-row.user .bubble-wrap {
-      align-items: flex-end;
-    }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-    .bubble {
-      padding: 11px 16px;
-      border-radius: 18px;
-      font-size: 14px;
-      line-height: 1.6;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .message-row.ai .bubble {
-      background: var(--ai-bubble);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
+        .message-row.user {
+            flex-direction: row-reverse;
+        }
 
-    .message-row.user .bubble {
-      background: var(--user-bubble);
-      color: #fff;
-      border-bottom-right-radius: 6px;
-    }
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F8EF7, #7B5EFB);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+            align-self: flex-end;
+        }
 
-    .timestamp {
-      font-size: 11px;
-      color: var(--muted);
-    }
+        .bubble-wrap {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+            gap: 4px;
+        }
 
-    /* Loading indicator */
-    .typing-indicator {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 12px 16px;
-      background: var(--ai-bubble);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      border-bottom-left-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      width: fit-content;
-    }
+        .message-row.user .bubble-wrap {
+            align-items: flex-end;
+        }
 
-    .typing-indicator span {
-      width: 7px;
-      height: 7px;
-      background: var(--muted);
-      border-radius: 50%;
-      animation: bounce 1.2s infinite;
-    }
+        .bubble {
+            padding: 11px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
 
-    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        .message-row.ai .bubble {
+            background: var(--ai-bubble);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
 
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
-    }
+        .message-row.user .bubble {
+            background: var(--user-bubble);
+            color: #fff;
+            border-bottom-right-radius: 6px;
+        }
 
-    /* Input area */
-    .input-area {
-      padding: 16px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
+        .timestamp {
+            font-size: 11px;
+            color: var(--muted);
+        }
 
-    .input-inner {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 10px 12px 10px 16px;
-      transition: border-color 0.2s;
-    }
+        /* Loading indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 16px;
+            background: var(--ai-bubble);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            width: fit-content;
+        }
 
-    .input-inner:focus-within {
-      border-color: var(--primary);
-    }
+        .typing-indicator span {
+            width: 7px;
+            height: 7px;
+            background: var(--muted);
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
 
-    textarea {
-      flex: 1;
-      border: none;
-      background: transparent;
-      resize: none;
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--text);
-      outline: none;
-      max-height: 120px;
-      line-height: 1.5;
-      overflow-y: auto;
-    }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
 
-    textarea::placeholder { color: var(--muted); }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
 
-    #sendBtn {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      border: none;
-      background: var(--primary);
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.2s, transform 0.1s;
-    }
+        @keyframes bounce {
 
-    #sendBtn:hover { background: var(--primary-dark); }
-    #sendBtn:active { transform: scale(0.93); }
-    #sendBtn:disabled { background: #b0c4f0; cursor: not-allowed; }
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
 
-    #sendBtn svg { width: 18px; height: 18px; }
+            30% {
+                transform: translateY(-6px);
+            }
+        }
 
-    .input-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 8px;
-      text-align: center;
-    }
-  </style>
+        /* Input area */
+        .input-area {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .input-inner {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 12px 10px 16px;
+            transition: border-color 0.2s;
+        }
+
+        .input-inner:focus-within {
+            border-color: var(--primary);
+        }
+
+        textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            outline: none;
+            max-height: 120px;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        textarea::placeholder {
+            color: var(--muted);
+        }
+
+        #sendBtn {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #sendBtn:hover {
+            background: var(--primary-dark);
+        }
+
+        #sendBtn:active {
+            transform: scale(0.93);
+        }
+
+        #sendBtn:disabled {
+            background: #b0c4f0;
+            cursor: not-allowed;
+        }
+
+        #sendBtn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-<div class="chat-container">
-  <!-- Header -->
-  <div class="chat-header">
-    <div class="avatar">📱</div>
-    <div class="header-info">
-      <h1>알뜰폰 AI 상담원</h1>
-      <p><span class="online-dot"></span>상담 가능</p>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="avatar">📱</div>
+            <div class="header-info">
+                <h1>알뜰폰 AI 상담원</h1>
+                <p><span class="online-dot"></span>상담 가능</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages" id="messages">
+            <div class="message-row ai">
+                <div class="msg-avatar">🤖</div>
+                <div class="bubble-wrap">
+                    <div class="bubble">안녕하세요! 알뜰폰 AI 상담원입니다. 😊<br>요금제, 개통, 번호이동 등 무엇이든 질문해 주세요.</div>
+                    <span class="timestamp">방금 전</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+            <div class="input-inner">
+                <textarea id="userInput" placeholder="질문을 입력하세요..." rows="1"></textarea>
+                <button id="sendBtn" title="전송">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <p class="input-hint">Enter로 전송 · Shift+Enter로 줄바꿈</p>
+        </div>
     </div>
-  </div>
 
-  <!-- Messages -->
-  <div class="messages" id="messages">
-    <div class="message-row ai">
-      <div class="msg-avatar">🤖</div>
-      <div class="bubble-wrap">
-        <div class="bubble">안녕하세요! 알뜰폰 AI 상담원입니다. 😊<br>요금제, 개통, 번호이동 등 무엇이든 질문해 주세요.</div>
-        <span class="timestamp">방금 전</span>
-      </div>
-    </div>
-  </div>
+    <script>
+        const messagesEl = document.getElementById('messages');
+        const inputEl = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-  <!-- Input -->
-  <div class="input-area">
-    <div class="input-inner">
-      <textarea
-        id="userInput"
-        placeholder="질문을 입력하세요..."
-        rows="1"
-      ></textarea>
-      <button id="sendBtn" title="전송">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      </button>
-    </div>
-    <p class="input-hint">Enter로 전송 · Shift+Enter로 줄바꿈</p>
-  </div>
-</div>
+        const API_URL = 'https://parkjiwon7210.app.n8n.cloud/webhook/rag-agent';
 
-<script>
-  const messagesEl = document.getElementById('messages');
-  const inputEl    = document.getElementById('userInput');
-  const sendBtn    = document.getElementById('sendBtn');
+        function getTime() {
+            return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        }
 
-  const API_URL = 'https://parkjiwon7210.app.n8n.cloud/webhook/rag-agent';
+        function scrollToBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
 
-  function getTime() {
-    return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-  }
+        function addMessage(text, role) {
+            const row = document.createElement('div');
+            row.className = `message-row ${role}`;
 
-  function scrollToBottom() {
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  }
+            const avatarEl = document.createElement('div');
+            avatarEl.className = 'msg-avatar';
+            avatarEl.textContent = role === 'ai' ? '🤖' : '👤';
 
-  function addMessage(text, role) {
-    const row = document.createElement('div');
-    row.className = `message-row ${role}`;
+            const wrap = document.createElement('div');
+            wrap.className = 'bubble-wrap';
 
-    const avatarEl = document.createElement('div');
-    avatarEl.className = 'msg-avatar';
-    avatarEl.textContent = role === 'ai' ? '🤖' : '👤';
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = text;
 
-    const wrap = document.createElement('div');
-    wrap.className = 'bubble-wrap';
+            const ts = document.createElement('span');
+            ts.className = 'timestamp';
+            ts.textContent = getTime();
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = text;
+            wrap.appendChild(bubble);
+            wrap.appendChild(ts);
 
-    const ts = document.createElement('span');
-    ts.className = 'timestamp';
-    ts.textContent = getTime();
+            if (role === 'ai') {
+                row.appendChild(avatarEl);
+                row.appendChild(wrap);
+            } else {
+                row.appendChild(wrap);
+                row.appendChild(avatarEl);
+            }
 
-    wrap.appendChild(bubble);
-    wrap.appendChild(ts);
+            messagesEl.appendChild(row);
+            scrollToBottom();
+        }
 
-    if (role === 'ai') {
-      row.appendChild(avatarEl);
-      row.appendChild(wrap);
-    } else {
-      row.appendChild(wrap);
-      row.appendChild(avatarEl);
-    }
+        function showTyping() {
+            const row = document.createElement('div');
+            row.className = 'message-row ai';
+            row.id = 'typingRow';
 
-    messagesEl.appendChild(row);
-    scrollToBottom();
-  }
+            const avatarEl = document.createElement('div');
+            avatarEl.className = 'msg-avatar';
+            avatarEl.textContent = '🤖';
 
-  function showTyping() {
-    const row = document.createElement('div');
-    row.className = 'message-row ai';
-    row.id = 'typingRow';
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
 
-    const avatarEl = document.createElement('div');
-    avatarEl.className = 'msg-avatar';
-    avatarEl.textContent = '🤖';
+            row.appendChild(avatarEl);
+            row.appendChild(indicator);
+            messagesEl.appendChild(row);
+            scrollToBottom();
+        }
 
-    const indicator = document.createElement('div');
-    indicator.className = 'typing-indicator';
-    indicator.innerHTML = '<span></span><span></span><span></span>';
+        function removeTyping() {
+            const el = document.getElementById('typingRow');
+            if (el) el.remove();
+        }
 
-    row.appendChild(avatarEl);
-    row.appendChild(indicator);
-    messagesEl.appendChild(row);
-    scrollToBottom();
-  }
+        async function sendMessage() {
+            const question = inputEl.value.trim();
+            if (!question) return;
 
-  function removeTyping() {
-    const el = document.getElementById('typingRow');
-    if (el) el.remove();
-  }
+            addMessage(question, 'user');
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+            sendBtn.disabled = true;
+            showTyping();
 
-  async function sendMessage() {
-    const question = inputEl.value.trim();
-    if (!question) return;
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
 
-    addMessage(question, 'user');
-    inputEl.value = '';
-    inputEl.style.height = 'auto';
-    sendBtn.disabled = true;
-    showTyping();
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question })
-      });
+                const data = await res.json();
+                const answer = typeof data === 'string' ? data : (Array.isArray(data) ? data[0]?.output : data?.output);
+                removeTyping();
+                addMessage(answer || '답변을 받지 못했습니다. 다시 시도해 주세요.', 'ai');
+            } catch (err) {
+                removeTyping();
+                addMessage('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'ai');
+                console.error(err);
+            } finally {
+                sendBtn.disabled = false;
+                inputEl.focus();
+            }
+        }
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        // Auto-resize textarea
+        inputEl.addEventListener('input', () => {
+            inputEl.style.height = 'auto';
+            inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+        });
 
-      const data = await res.json();
-      const answer = Array.isArray(data) ? data[0]?.output : data?.output;
-      removeTyping();
-      addMessage(answer || '답변을 받지 못했습니다. 다시 시도해 주세요.', 'ai');
-    } catch (err) {
-      removeTyping();
-      addMessage('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'ai');
-      console.error(err);
-    } finally {
-      sendBtn.disabled = false;
-      inputEl.focus();
-    }
-  }
+        // Enter to send, Shift+Enter for newline
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-  // Auto-resize textarea
-  inputEl.addEventListener('input', () => {
-    inputEl.style.height = 'auto';
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
-  });
-
-  // Enter to send, Shift+Enter for newline
-  inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  sendBtn.addEventListener('click', sendMessage);
-</script>
+        sendBtn.addEventListener('click', sendMessage);
+    </script>
 </body>
+
 </html>
